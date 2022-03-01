@@ -17,6 +17,7 @@ import {
   useColorScheme,
   View,
   Button,
+  Image,
 } from 'react-native';
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
@@ -91,7 +92,10 @@ const Profile: () => Node = ({navigation, route}) => {
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}></ScrollView>
+        style={backgroundStyle}
+        contentContainerStyle={styles.profileImageContainer}>
+        <Image source={require('./img/steve.jpg')} />
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -141,6 +145,9 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
+  },
+  profileImageContainer: {
+    alignItems: 'center',
   },
 });
 

@@ -16,15 +16,10 @@ import {
   Text,
   useColorScheme,
   View,
+  Button,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
 
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -57,9 +52,8 @@ const Section = ({children, title}): Node => {
   );
 };
 
-const Home: () => Node = () => {
+const Home: () => Node = ({navigation}) => {
   const isDarkMode = useColorScheme() === 'dark';
-
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
@@ -69,27 +63,50 @@ const Home: () => Node = () => {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
-        <Header />
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+          <Button
+            title="Go to profile page"
+            onPress={() => navigation.navigate('Profile', {name: 'Steve'})}
+          />
+          <Button
+            title="Go to feed"
+            onPress={() => navigation.navigate('Feed')}
+          />
         </View>
       </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+const Profile: () => Node = ({navigation, route}) => {
+  const isDarkMode = useColorScheme() === 'dark';
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  };
+  return (
+    <SafeAreaView style={backgroundStyle}>
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={backgroundStyle}></ScrollView>
+    </SafeAreaView>
+  );
+};
+
+const Feed: () => Node = ({navigation}) => {
+  const isDarkMode = useColorScheme() === 'dark';
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  };
+  return (
+    <SafeAreaView style={backgroundStyle}>
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={backgroundStyle}></ScrollView>
     </SafeAreaView>
   );
 };
@@ -101,6 +118,8 @@ const App: () => Node = () => {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Home" component={Home}></Stack.Screen>
+        <Stack.Screen name="Profile" component={Profile}></Stack.Screen>
+        <Stack.Screen name="Feed" component={Feed}></Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -17,11 +17,12 @@ import {
   View,
   Button,
   Image,
+  Text,
 } from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {makeAutoObservable} from 'mobx';
+import {action, makeAutoObservable, makeObservable, observable} from 'mobx';
 import {observer} from 'mobx-react-lite';
 import {Picker} from '@react-native-picker/picker';
 import {useContext} from 'react/cjs/react.development';
@@ -44,7 +45,11 @@ export class UserStore {
   users = [];
 
   constructor(users) {
-    makeAutoObservable(this);
+    makeObservable(this, {
+      activeUser: observable,
+      users: observable,
+      changeActiveUser: action,
+    });
     this.users = users;
     this.activeUser = users[0];
   }
@@ -62,40 +67,8 @@ export const StoreProvider: () => Node = ({children, store}) => {
   );
 };
 
-const UserStoreView = observer(({navigation, userStore}) => {
-  return (
-    userStore &&
-    userStore.users && (
-      <View>
-        <Picker
-          selectedValue={userStore.activeUser}
-          onValueChange={user => userStore.changeActiveUser(user)}>
-          {userStore.users.map(user => (
-            <Picker.Item key={user.id} value={user} label={user.name} />
-          ))}
-        </Picker>
-        {userStore.activeUser && (
-          <View>
-            <Button
-              title="Go to profile page"
-              onPress={() =>
-                navigation.navigate('Profile', {
-                  name: userStore.activeUser.name,
-                })
-              }
-            />
-            <Button
-              title="Go to feed"
-              onPress={() => navigation.navigate('Feed')}
-            />
-          </View>
-        )}
-      </View>
-    )
-  );
-});
-
-const Home: () => Node = ({navigation, isDarkMode = true}) => {
+const Home = observer(({navigation}) => {
+  const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
@@ -106,13 +79,32 @@ const Home: () => Node = ({navigation, isDarkMode = true}) => {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
-        <UserStoreView navigation={navigation} userStore={store} />
+        {store.activeUser && (
+          <View>
+            <Picker
+              selectedValue={store.activeUser}
+              onValueChange={user => store.changeActiveUser(user)}>
+              {store.users.map(user => (
+                <Picker.Item key={user.id} value={user} label={user.name} />
+              ))}
+            </Picker>
+            <Button
+              title={'Go to profile page: ' + store.activeUser.name}
+              onPress={() => navigation.navigate('Profile')}
+            />
+            <Button
+              title="Go to feed"
+              onPress={() => navigation.navigate('Feed')}
+            />
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
-};
+});
 
-const Profile: () => Node = ({navigation, isDarkMode = true}) => {
+const Profile: () => Node = ({navigation}) => {
+  const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
@@ -122,7 +114,7 @@ const Profile: () => Node = ({navigation, isDarkMode = true}) => {
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
-        <View>
+        <View style={styles.profileImageContainer}>
           <Image source={require('./img/steve.jpg')} />
         </View>
       </ScrollView>
@@ -130,27 +122,85 @@ const Profile: () => Node = ({navigation, isDarkMode = true}) => {
   );
 };
 
+const Section = ({children, title}): Node => {
+  const isDarkMode = useColorScheme() === 'dark';
+  return (
+    <View style={styles.sectionContainer}>
+      <Text
+        style={[
+          styles.sectionTitle,
+          {
+            color: isDarkMode ? Colors.white : Colors.black,
+          },
+        ]}>
+        {title}
+      </Text>
+      <Text
+        style={[
+          styles.sectionDescription,
+          {
+            color: isDarkMode ? Colors.light : Colors.dark,
+          },
+        ]}>
+        {children}
+      </Text>
+    </View>
+  );
+};
+
 const Feed: () => Node = ({navigation, isDarkMode = true}) => {
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+  items = [
+    Math.floor(Math.random() * 15),
+    Math.floor(Math.random() * 15),
+    Math.floor(Math.random() * 15),
+  ];
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}></ScrollView>
+        style={backgroundStyle}>
+        {items.map(item => (
+          <Section key={item} title={fullNbaEast[item]}>
+            {fullNbaEast[item]}
+          </Section>
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
 const userStore = new UserStore([new User('Steve'), new User('Jane')]);
+const fullNbaEast = [
+  'Toronto Raptors',
+  'Boston Celtics',
+  'Brooklyn Nets',
+  'Philadelphia 76ers',
+  'New York Knicks',
+  'Cleveland Cavaliers',
+  'Chicago Bulls',
+  'Milwaukee Bucks',
+  'Indiana Pacers',
+  'Detroit Pistons',
+  'Atlanta Hawks',
+  'Washington Wizards',
+  'Miami Heat',
+  'Charlotte Hornets',
+  'Orlando Magic',
+];
 const App: () => Node = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  };
+
   return (
     <StoreProvider store={userStore}>
-      <NavigationContainer>
+      <NavigationContainer styles={backgroundStyle}>
         <Stack.Navigator>
           <Stack.Screen name="Home" component={Home}></Stack.Screen>
           <Stack.Screen name="Profile" component={Profile}></Stack.Screen>

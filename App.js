@@ -32,7 +32,6 @@ const Stack = createNativeStackNavigator();
 export class User {
   id = Math.random();
   name = '';
-  image = './img/steve.jpg';
 
   constructor(name) {
     makeAutoObservable(this);
@@ -200,7 +199,7 @@ const App: () => Node = () => {
 
   return (
     <StoreProvider store={userStore}>
-      <NavigationContainer styles={backgroundStyle}>
+      <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen name="Home" component={Home}></Stack.Screen>
           <Stack.Screen name="Profile" component={Profile}></Stack.Screen>
@@ -224,9 +223,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 18,
     fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
   },
   profileImageContainer: {
     alignItems: 'center',

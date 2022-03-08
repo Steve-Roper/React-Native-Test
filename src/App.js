@@ -70,6 +70,7 @@ const Home = observer(({navigation}) => {
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    flex: 1,
   };
   const store = useContext(StoreContext);
   return (
@@ -102,10 +103,11 @@ const Home = observer(({navigation}) => {
   );
 });
 
-const Profile: () => Node = ({navigation}) => {
+const Profile: () => Node = ({}) => {
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    flex: 1,
   };
   return (
     <SafeAreaView style={backgroundStyle}>
@@ -114,7 +116,7 @@ const Profile: () => Node = ({navigation}) => {
         contentInsetAdjustmentBehavior="automatic"
         style={backgroundStyle}>
         <View style={styles.profileImageContainer}>
-          <Image source={require('./img/steve.jpg')} />
+          <Image source={require('../img/steve.jpg')} />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -147,9 +149,11 @@ const Section = ({children, title}): Node => {
   );
 };
 
-const Feed: () => Node = ({navigation, isDarkMode = true}) => {
+const Feed: () => Node = ({}) => {
+  const isDarkMode = useColorScheme() === 'dark';
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    flex: 1,
   };
   items = [
     Math.floor(Math.random() * 15),
@@ -191,12 +195,6 @@ const fullNbaEast = [
   'Orlando Magic',
 ];
 const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
   return (
     <StoreProvider store={userStore}>
       <NavigationContainer>
